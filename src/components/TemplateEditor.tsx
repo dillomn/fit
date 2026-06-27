@@ -15,6 +15,7 @@ type TE = {
   exerciseName: string;
   targetSets: number;
   targetReps: number;
+  repScheme: string | null;
 };
 type Exercise = { id: number; name: string; category: string };
 
@@ -49,12 +50,10 @@ export default function TemplateEditor({
               startTransition(() => updateTemplateExercise(it.id, { targetSets: v }))
             }
           />
-          <Stepper
-            label="reps"
-            value={it.targetReps}
-            min={1}
-            onChange={(v) =>
-              startTransition(() => updateTemplateExercise(it.id, { targetReps: v }))
+          <SchemeInput
+            initial={it.repScheme ?? String(it.targetReps)}
+            onCommit={(v) =>
+              startTransition(() => updateTemplateExercise(it.id, { repScheme: v }))
             }
           />
           <button
@@ -113,6 +112,28 @@ export default function TemplateEditor({
       >
         Delete template
       </button>
+    </div>
+  );
+}
+
+function SchemeInput({
+  initial,
+  onCommit,
+}: {
+  initial: string;
+  onCommit: (v: string) => void;
+}) {
+  const [v, setV] = useState(initial);
+  return (
+    <div className="flex flex-col items-center">
+      <span className="text-[9px] uppercase text-muted">reps</span>
+      <input
+        className="w-16 rounded-lg border border-border bg-surface2 px-1 py-1 text-center text-sm text-white outline-none focus:border-accent2"
+        value={v}
+        placeholder="8-12"
+        onChange={(e) => setV(e.target.value)}
+        onBlur={() => v !== initial && onCommit(v)}
+      />
     </div>
   );
 }

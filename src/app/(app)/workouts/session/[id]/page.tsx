@@ -32,6 +32,20 @@ export default async function SessionPage({
   const exercises: Record<number, any> = {};
   for (const s of session.sets) exercises[s.exerciseId] = s.exercise;
 
+  // Pull target rep schemes from the originating template, if any.
+  const targets: Record<number, { sets: number; scheme: string }> = {};
+  if (session.templateId) {
+    const tes = await db.templateExercise.findMany({
+      where: { templateId: session.templateId },
+    });
+    for (const te of tes) {
+      targets[te.exerciseId] = {
+        sets: te.targetSets,
+        scheme: te.repScheme ?? String(te.targetReps),
+      };
+    }
+  }
+
   return (
     <div className="space-y-4">
       <header className="flex items-center justify-between">
@@ -62,6 +76,7 @@ export default async function SessionPage({
           done: s.done,
         }))}
         exercises={exercises}
+        targets={targets}
         allExercises={allExercises.map((e) => ({
           id: e.id,
           name: e.name,

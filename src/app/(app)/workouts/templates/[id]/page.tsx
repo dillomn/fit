@@ -51,6 +51,7 @@ export default async function TemplatePage({
           exerciseName: te.exercise.name,
           targetSets: te.targetSets,
           targetReps: te.targetReps,
+          repScheme: te.repScheme,
         }))}
         allExercises={allExercises.map((e) => ({
           id: e.id,

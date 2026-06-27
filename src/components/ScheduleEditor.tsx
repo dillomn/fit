@@ -16,6 +16,10 @@ export default function ScheduleEditor({
   const [pending, startTransition] = useTransition();
   const byDay = new Map(schedule.map((s) => [s.dayOfWeek, s.templateId]));
 
+  // Compact label for the tiny day cells: text before an en/em dash or hyphen,
+  // e.g. "Day 1 – Pull + Biceps + Abs" -> "Day 1", "Pull Day" -> "Pull Day".
+  const shortLabel = (name: string) => name.split(/\s*[–—-]\s*/)[0].trim();
+
   return (
     <div className={`grid grid-cols-7 gap-1.5 ${pending ? "opacity-60" : ""}`}>
       {DAY_SHORT.map((label, day) => {
@@ -25,10 +29,10 @@ export default function ScheduleEditor({
           <div key={day} className="flex flex-col items-center gap-1">
             <span className="text-[10px] font-semibold text-muted">{label}</span>
             <div
-              className="relative flex h-16 w-full items-center justify-center rounded-xl border border-border bg-surface2 p-1 text-center text-[10px] font-medium leading-tight"
+              className="relative flex h-16 w-full items-center justify-center overflow-hidden break-words rounded-xl border border-border bg-surface2 p-1 text-center text-[10px] font-medium leading-tight"
               style={tpl ? { borderColor: tpl.color, color: tpl.color } : undefined}
             >
-              {tpl ? tpl.name.replace(/ Day$/, "") : "Rest"}
+              {tpl ? shortLabel(tpl.name) : "Rest"}
               <select
                 aria-label={`Schedule for ${label}`}
                 className="absolute inset-0 cursor-pointer opacity-0"

@@ -139,9 +139,21 @@ export async function addTemplateExercise(
 
 export async function updateTemplateExercise(
   id: number,
-  data: { targetSets?: number; targetReps?: number; targetWeight?: number | null },
+  data: {
+    targetSets?: number;
+    targetReps?: number;
+    targetWeight?: number | null;
+    repScheme?: string | null;
+  },
 ): Promise<void> {
-  const te = await db.templateExercise.update({ where: { id }, data });
+  // When the rep scheme text changes, derive a numeric default (last number in
+  // the string, e.g. "8-12" -> 12, "45-60s" -> 60) to pre-fill logged sets.
+  const patch = { ...data };
+  if (data.repScheme !== undefined) {
+    const nums = (data.repScheme ?? "").match(/\d+/g);
+    if (nums && nums.length) patch.targetReps = Number(nums[nums.length - 1]);
+  }
+  const te = await db.templateExercise.update({ where: { id }, data: patch });
   revalidatePath(`/workouts/templates/${te.templateId}`);
 }
 

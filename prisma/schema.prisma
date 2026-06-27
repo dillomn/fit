@@ -23,7 +23,7 @@ model UserProfile {
   // Desired rate of change in kg/week (negative = cut, positive = bulk)
   weeklyRateKg  Float    @default(-0.5)
   // Macro strategy
-  proteinPerKg  Float    @default(2.0) // g protein per kg bodyweight
+  proteinPerKg  Float    @default(1.6) // g protein per kg bodyweight
   fatPctCalories Float   @default(0.25) // fraction of calories from fat
   unit          String   @default("metric") // metric | imperial (display only)
   updatedAt     DateTime @updatedAt
@@ -64,6 +64,9 @@ model TemplateExercise {
   order      Int    @default(0)
   targetSets Int    @default(3)
   targetReps Int    @default(10)
+  // Free-text rep target, e.g. "8-12", "AMRAP", "45-60s". Display only;
+  // targetReps holds a numeric default used to pre-fill logged sets.
+  repScheme  String?
   targetWeight Float?
 
   template WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)

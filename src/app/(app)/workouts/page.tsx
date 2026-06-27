@@ -8,17 +8,12 @@ import { startSession } from "@/lib/actions";
 export const dynamic = "force-dynamic";
 
 export default async function WorkoutsPage() {
-  const [templates, schedule, recent] = await Promise.all([
+  const [templates, schedule] = await Promise.all([
     db.workoutTemplate.findMany({
       orderBy: { createdAt: "asc" },
       include: { _count: { select: { exercises: true } } },
     }),
     db.scheduleSlot.findMany(),
-    db.workoutSession.findMany({
-      orderBy: { date: "desc" },
-      take: 8,
-      include: { _count: { select: { sets: true } } },
-    }),
   ]);
 
   return (
@@ -56,38 +51,12 @@ export default async function WorkoutsPage() {
         </form>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-          Recent sessions
-        </h2>
-        {recent.length === 0 && <p className="text-sm text-muted">No workouts logged yet.</p>}
-        {recent.map((s) => (
-          <Link
-            key={s.id}
-            href={`/workouts/session/${s.id}`}
-            className="card flex items-center justify-between"
-          >
-            <div>
-              <div className="font-medium">{s.name}</div>
-              <div className="text-xs text-muted">
-                {new Date(s.date).toLocaleDateString(undefined, {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })}{" "}
-                · {s._count.sets} sets
-              </div>
-            </div>
-            <span className={`text-xs ${s.completedAt ? "text-accent" : "text-muted"}`}>
-              {s.completedAt ? "Done ✓" : "Open"}
-            </span>
-          </Link>
-        ))}
-      </section>
-
-      <div className="flex gap-3 text-sm">
-        <Link href="/workouts/exercises" className="text-accent2">
-          Manage exercises →
+      <div className="grid grid-cols-2 gap-3">
+        <Link href="/workouts/history" className="btn-ghost">
+          View history
+        </Link>
+        <Link href="/workouts/exercises" className="btn-ghost">
+          Manage exercises
         </Link>
       </div>
     </div>

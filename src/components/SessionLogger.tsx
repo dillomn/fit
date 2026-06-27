@@ -26,12 +26,14 @@ export default function SessionLogger({
   completed,
   sets,
   exercises,
+  targets,
   allExercises,
 }: {
   sessionId: number;
   completed: boolean;
   sets: Set[];
   exercises: Record<number, Exercise>;
+  targets: Record<number, { sets: number; scheme: string }>;
   allExercises: Exercise[];
 }) {
   const [, startTransition] = useTransition();
@@ -75,8 +77,13 @@ export default function SessionLogger({
         const isWeighted = ex?.type === "weight";
         return (
           <section key={g.exerciseId} className="card">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex items-baseline justify-between gap-2">
               <h3 className="font-bold">{ex?.name ?? "Exercise"}</h3>
+              {targets[g.exerciseId] && (
+                <span className="shrink-0 text-xs text-muted">
+                  target {targets[g.exerciseId].sets} × {targets[g.exerciseId].scheme}
+                </span>
+              )}
             </div>
 
             <div className="mb-1 grid grid-cols-[2rem_1fr_1fr_2.5rem] items-center gap-2 px-1 text-[10px] font-semibold uppercase text-muted">
