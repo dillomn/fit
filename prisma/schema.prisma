@@ -1,0 +1,142 @@
+// Fit — single-user fitness journal. SQLite + Prisma.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Single-row profile holding the user's stats and goal, used for TDEE/macro math.
+model UserProfile {
+  id            Int      @id @default(1)
+  // Biometrics for TDEE (Mifflin–St Jeor)
+  sex           String   @default("male") // "male" | "female"
+  birthDate     DateTime?
+  heightCm      Float?
+  // Goals
+  activityLevel String   @default("moderate") // sedentary|light|moderate|active|very_active
+  goalWeightKg  Float?
+  goalBodyFat   Float?
+  // Desired rate of change in kg/week (negative = cut, positive = bulk)
+  weeklyRateKg  Float    @default(-0.5)
+  // Macro strategy
+  proteinPerKg  Float    @default(2.0) // g protein per kg bodyweight
+  fatPctCalories Float   @default(0.25) // fraction of calories from fat
+  unit          String   @default("metric") // metric | imperial (display only)
+  updatedAt     DateTime @updatedAt
+}
+
+/// Catalog of exercises that can be added to templates and logged.
+model Exercise {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  category  String   @default("Other") // Push|Pull|Legs|Core|Cardio|Other
+  type      String   @default("weight") // weight|bodyweight|cardio|duration
+  unit      String   @default("kg") // kg|lb|none
+  notes     String?
+  createdAt DateTime @default(now())
+
+  templateExercises TemplateExercise[]
+  setLogs           SetLog[]
+}
+
+/// A reusable workout (e.g. "Push Day A") made of an ordered list of exercises.
+model WorkoutTemplate {
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String   @default("#4ade80")
+  notes     String?
+  createdAt DateTime @default(now())
+
+  exercises TemplateExercise[]
+  slots     ScheduleSlot[]
+  sessions  WorkoutSession[]
+}
+
+/// An exercise inside a template with target sets/reps.
+model TemplateExercise {
+  id         Int    @id @default(autoincrement())
+  templateId Int
+  exerciseId Int
+  order      Int    @default(0)
+  targetSets Int    @default(3)
+  targetReps Int    @default(10)
+  targetWeight Float?
+
+  template WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exercise Exercise        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, exerciseId])
+}
+
+/// Assigns a template to a day of the week for the recurring schedule.
+model ScheduleSlot {
+  id         Int @id @default(autoincrement())
+  dayOfWeek  Int // 0 = Sunday ... 6 = Saturday
+  templateId Int
+
+  template WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([dayOfWeek, templateId])
+}
+
+/// A performed workout on a given date.
+model WorkoutSession {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @default(now())
+  templateId Int?
+  name       String
+  notes      String?
+  completedAt DateTime?
+
+  template WorkoutTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  sets     SetLog[]
+
+  @@index([date])
+}
+
+/// A single logged set within a session.
+model SetLog {
+  id         Int     @id @default(autoincrement())
+  sessionId  Int
+  exerciseId Int
+  setNumber  Int     @default(1)
+  reps       Int?
+  weight     Float?
+  durationSec Int?
+  done       Boolean @default(false)
+  createdAt  DateTime @default(now())
+
+  session  WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise Exercise       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId])
+}
+
+/// Body weight + body fat measurement.
+model BodyMetric {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  weightKg  Float
+  bodyFat   Float?
+  note      String?
+
+  @@index([date])
+}
+
+/// A logged food / calorie entry for a given day.
+model FoodEntry {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  name      String
+  calories  Float    @default(0)
+  protein   Float    @default(0)
+  carbs     Float    @default(0)
+  fat       Float    @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([date])
+}

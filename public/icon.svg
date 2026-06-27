@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#0b0f14"/>
+  <g stroke="#4ade80" stroke-width="34" stroke-linecap="round" fill="none">
+    <path d="M150 150 L362 362"/>
+    <path d="M120 120 L150 150 M362 362 L392 392"/>
+    <path d="M96 192 L160 128 M352 384 L416 320"/>
+  </g>
+  <text x="256" y="300" font-family="system-ui, sans-serif" font-size="150" font-weight="900"
+    fill="#38bdf8" text-anchor="middle" dominant-baseline="middle" opacity="0.0">F</text>
+</svg>

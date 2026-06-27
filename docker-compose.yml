@@ -1,0 +1,22 @@
+services:
+  fit:
+    build: .
+    image: fit:latest
+    container_name: fit
+    restart: unless-stopped
+    ports:
+      # Host:Container. Point your reverse proxy at 127.0.0.1:3000.
+      - "127.0.0.1:3000:3000"
+    environment:
+      # SQLite database lives on the mounted volume below.
+      DATABASE_URL: "file:/data/fit.db"
+      # CHANGE THESE before deploying.
+      APP_PASSWORD: "${APP_PASSWORD:?set APP_PASSWORD in .env}"
+      SESSION_SECRET: "${SESSION_SECRET:?set SESSION_SECRET in .env}"
+      # Set to "false" to stop re-running the starter seed on boot.
+      SEED_ON_START: "true"
+    volumes:
+      - fit_data:/data
+
+volumes:
+  fit_data:

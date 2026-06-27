@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0b0f14;
+  color: #e6edf3;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  /* Safe-area padding for notched phones + room for the bottom nav */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hide number input spinners for a cleaner mobile look */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-border bg-surface p-4;
+  }
+  .input {
+    @apply w-full rounded-xl border border-border bg-surface2 px-3 py-2 text-base
+      text-white outline-none focus:border-accent2;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+      text-sm font-semibold transition active:scale-[0.98] disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-black;
+  }
+  .btn-ghost {
+    @apply btn border border-border bg-surface2 text-white;
+  }
+  .label {
+    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-muted;
+  }
+}
