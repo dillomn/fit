@@ -66,7 +66,7 @@ const TEMPLATES = [
       { name: "Bench Dips", sets: 4, reps: 10, scheme: "6-12" },
       { name: "Lateral Raises", sets: 4, reps: 20, scheme: "12-20" },
       // B: chest press + core
-      { name: "Push-Ups", sets: 3, reps: 15, scheme: "8-15" },
+      { name: "Ring Push-Ups", sets: 3, reps: 15, scheme: "8-15" },
       { name: "Hanging Leg Raises", sets: 4, reps: 12, scheme: "8-12" },
       // C: shoulder press + triceps
       { name: "Pike Push-Ups", sets: 3, reps: 10, scheme: "6-10" },
@@ -85,7 +85,7 @@ const TEMPLATES = [
       { name: "Band-Assisted Dips", sets: 4, reps: 8, scheme: "5-10 (assisted)" },
       // B: row + push-up antagonist superset
       { name: "Australian Rows", sets: 3, reps: 12, scheme: "8-12" },
-      { name: "Push-Ups", sets: 3, reps: 15, scheme: "8-15" },
+      { name: "Ring Push-Ups", sets: 3, reps: 15, scheme: "8-15" },
       // C: biceps + triceps antagonist superset
       { name: "Barbell/Dumbbell Curls", sets: 3, reps: 12, scheme: "8-12" },
       { name: "Triceps Extensions", sets: 3, reps: 12, scheme: "8-12" },
