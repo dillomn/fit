@@ -52,8 +52,8 @@ const TEMPLATES = [
       // C: horizontal ring pull + pull-up negatives
       { name: "Ring Rows", sets: 4, reps: 12, scheme: "8-12" },
       { name: "Negative Pull-Ups", sets: 3, reps: 3, scheme: "3 (slow 3-5s)" },
-      // D: arm + grip finisher
-      { name: "Hammer Curls", sets: 3, reps: 15, scheme: "10-15" },
+      // D: grip finisher (no curls here — elbows get enough from the pulling;
+      // direct biceps work lives on Day 3)
       { name: "Dead Hangs", sets: 3, reps: 30, scheme: "20-30s (grip)" },
     ],
   },
@@ -67,11 +67,9 @@ const TEMPLATES = [
       // B: dip progression + the one side-delt isolation
       { name: "Bench Dips", sets: 4, reps: 10, scheme: "6-12" },
       { name: "Lateral Raises", sets: 3, reps: 15, scheme: "12-20" },
-      // C: single overhead compound + chest volume (shoulders kept in check)
+      // C: single overhead compound + ring support carry-over. No extra push-up
+      // volume or triceps isolation — triceps already work in every press here.
       { name: "Pike Push-Ups", sets: 3, reps: 8, scheme: "6-10" },
-      { name: "Push-Ups", sets: 3, reps: 15, scheme: "AMRAP" },
-      // D: triceps + ring support carry-over
-      { name: "Triceps Extensions", sets: 3, reps: 12, scheme: "8-12" },
       { name: "Ring Support Holds", sets: 3, reps: 30, scheme: "20-30s" },
     ],
   },
@@ -85,12 +83,12 @@ const TEMPLATES = [
       // B: ring row + ring push-up antagonist superset
       { name: "Ring Rows", sets: 3, reps: 12, scheme: "8-12" },
       { name: "Ring Push-Ups", sets: 3, reps: 12, scheme: "8-12" },
-      // C: biceps + triceps antagonist superset
+      // C: biceps + core (triceps isolation dropped — dips and ring push-ups
+      // above already cover them)
       { name: "Barbell/Dumbbell Curls", sets: 3, reps: 12, scheme: "8-12" },
-      { name: "Triceps Extensions", sets: 3, reps: 12, scheme: "8-12" },
-      // D: scap strength + core (no legs)
-      { name: "Scapular Pulls", sets: 3, reps: 10, scheme: "8-10 (slow)" },
       { name: "Hanging Knee Raises", sets: 3, reps: 15, scheme: "10-15" },
+      // D: scap strength finisher (no legs)
+      { name: "Scapular Pulls", sets: 3, reps: 10, scheme: "8-10 (slow)" },
     ],
   },
 ];
