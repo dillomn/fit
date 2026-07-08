@@ -64,8 +64,9 @@ const TEMPLATES = [
       // A: ring chest press + core (rings you can already do from rib height)
       { name: "Ring Push-Ups", sets: 4, reps: 12, scheme: "8-12" },
       { name: "Hanging Leg Raises", sets: 3, reps: 12, scheme: "8-12" },
-      // B: dip progression + the one side-delt isolation
-      { name: "Bench Dips", sets: 4, reps: 10, scheme: "6-12" },
+      // B: dip progression (parallel-bar, ring-dip pattern) + side-delt isolation.
+      // More reps / more assistance here; Day 3 runs fewer reps as the progression.
+      { name: "Band-Assisted Dips", sets: 4, reps: 10, scheme: "6-12 (assisted)" },
       { name: "Lateral Raises", sets: 3, reps: 15, scheme: "12-20" },
       // C: single overhead compound + ring support carry-over. No extra push-up
       // volume or triceps isolation — triceps already work in every press here.
