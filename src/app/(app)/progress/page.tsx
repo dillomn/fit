@@ -1,49 +1,34 @@
 import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
 import ProgressView, { type ExerciseSeries } from "@/components/ProgressView";
-import { estimateOneRepMax } from "@/lib/nutrition";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProgressPage() {
-  // All weighted sets that have both weight and reps recorded.
+  // Every completed set — the checklist "volume" that shows work over time.
   const sets = await db.setLog.findMany({
-    where: { weight: { not: null }, reps: { not: null } },
+    where: { done: true },
     include: { exercise: true, session: { select: { date: true } } },
     orderBy: { createdAt: "asc" },
   });
 
-  // Group by exercise, then by calendar day, keeping the best set of each day.
-  type DayBest = { date: Date; oneRm: number; weight: number };
+  // Group by exercise, then by calendar day, counting completed sets per day.
   const byExercise = new Map<
     number,
-    { name: string; unit: string; days: Map<string, DayBest> }
+    { name: string; days: Map<string, { date: Date; sets: number }> }
   >();
 
   for (const s of sets) {
-    if (s.weight == null || s.reps == null) continue;
-    const oneRm = estimateOneRepMax(s.weight, s.reps);
-    const key = new Date(s.session.date);
-    const dayKey = key.toISOString().slice(0, 10);
+    const date = new Date(s.session.date);
+    const dayKey = date.toISOString().slice(0, 10);
 
     if (!byExercise.has(s.exerciseId)) {
-      byExercise.set(s.exerciseId, {
-        name: s.exercise.name,
-        unit: s.exercise.unit === "none" ? "reps" : s.exercise.unit,
-        days: new Map(),
-      });
+      byExercise.set(s.exerciseId, { name: s.exercise.name, days: new Map() });
     }
     const ex = byExercise.get(s.exerciseId)!;
-    const existing = ex.days.get(dayKey);
-    if (!existing || oneRm > existing.oneRm) {
-      ex.days.set(dayKey, {
-        date: key,
-        oneRm,
-        weight: Math.max(s.weight, existing?.weight ?? 0),
-      });
-    } else if (s.weight > existing.weight) {
-      existing.weight = s.weight;
-    }
+    const day = ex.days.get(dayKey);
+    if (day) day.sets += 1;
+    else ex.days.set(dayKey, { date, sets: 1 });
   }
 
   const series: ExerciseSeries[] = [...byExercise.entries()]
@@ -54,18 +39,16 @@ export default async function ProgressPage() {
       return {
         exerciseId,
         name: ex.name,
-        unit: ex.unit,
-        oneRm: days.map((d) => ({ label: fmt(d.date), value: d.oneRm })),
-        topSet: days.map((d) => ({ label: fmt(d.date), value: d.weight })),
-        best1rm: Math.max(...days.map((d) => d.oneRm)),
-        bestWeight: Math.max(...days.map((d) => d.weight)),
+        volume: days.map((d) => ({ label: fmt(d.date), value: d.sets })),
+        totalSets: days.reduce((n, d) => n + d.sets, 0),
+        sessions: days.length,
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Progress" subtitle="Strength over time, per exercise" />
+      <PageHeader title="Progress" subtitle="Sets completed over time, per exercise" />
       <ProgressView series={series} />
     </div>
   );

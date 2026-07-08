@@ -26,7 +26,6 @@ export async function startSession(templateId?: number): Promise<void> {
               exerciseId: te.exerciseId,
               setNumber: i + 1,
               reps: te.targetReps,
-              weight: te.targetWeight ?? undefined,
             })),
           ),
         },
@@ -47,7 +46,7 @@ export async function startSession(templateId?: number): Promise<void> {
 
 export async function updateSet(
   setId: number,
-  data: { reps?: number | null; weight?: number | null; durationSec?: number | null },
+  data: { reps?: number | null; durationSec?: number | null },
 ): Promise<void> {
   const set = await db.setLog.update({ where: { id: setId }, data });
   revalidatePath(`/workouts/session/${set.sessionId}`);
@@ -70,7 +69,6 @@ export async function addSet(sessionId: number, exerciseId: number): Promise<voi
       exerciseId,
       setNumber: count + 1,
       reps: last?.reps ?? null,
-      weight: last?.weight ?? null,
     },
   });
   revalidatePath(`/workouts/session/${sessionId}`);
@@ -142,7 +140,6 @@ export async function updateTemplateExercise(
   data: {
     targetSets?: number;
     targetReps?: number;
-    targetWeight?: number | null;
     repScheme?: string | null;
   },
 ): Promise<void> {
@@ -170,6 +167,23 @@ export async function setScheduleForDay(
   if (templateId) {
     await db.scheduleSlot.create({ data: { dayOfWeek, templateId } });
   }
+  revalidatePath("/workouts");
+  revalidatePath("/");
+}
+
+/** Swap the templates assigned to two weekdays (drag-and-drop reorder). */
+export async function swapScheduleDays(dayA: number, dayB: number): Promise<void> {
+  if (dayA === dayB) return;
+  const [a, b] = await Promise.all([
+    db.scheduleSlot.findFirst({ where: { dayOfWeek: dayA } }),
+    db.scheduleSlot.findFirst({ where: { dayOfWeek: dayB } }),
+  ]);
+  // Clear both days first to avoid tripping the @@unique([dayOfWeek, templateId]).
+  await db.scheduleSlot.deleteMany({ where: { dayOfWeek: { in: [dayA, dayB] } } });
+  const creates = [];
+  if (b) creates.push(db.scheduleSlot.create({ data: { dayOfWeek: dayA, templateId: b.templateId } }));
+  if (a) creates.push(db.scheduleSlot.create({ data: { dayOfWeek: dayB, templateId: a.templateId } }));
+  await Promise.all(creates);
   revalidatePath("/workouts");
   revalidatePath("/");
 }

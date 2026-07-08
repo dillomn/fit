@@ -72,7 +72,6 @@ export default async function SessionPage({
           exerciseId: s.exerciseId,
           setNumber: s.setNumber,
           reps: s.reps,
-          weight: s.weight,
           done: s.done,
         }))}
         exercises={exercises}

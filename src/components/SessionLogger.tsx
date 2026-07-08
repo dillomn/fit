@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import {
-  updateSet,
   toggleSetDone,
   addSet,
   removeSet,
@@ -16,7 +15,6 @@ type Set = {
   exerciseId: number;
   setNumber: number;
   reps: number | null;
-  weight: number | null;
   done: boolean;
 };
 type Exercise = { id: number; name: string; type: string; unit: string };
@@ -74,62 +72,43 @@ export default function SessionLogger({
 
       {groups.map((g) => {
         const ex = exercises[g.exerciseId];
-        const isWeighted = ex?.type === "weight";
+        const target = targets[g.exerciseId];
         return (
           <section key={g.exerciseId} className="card">
             <div className="mb-3 flex items-baseline justify-between gap-2">
               <h3 className="font-bold">{ex?.name ?? "Exercise"}</h3>
-              {targets[g.exerciseId] && (
+              {target && (
                 <span className="shrink-0 text-xs text-muted">
-                  target {targets[g.exerciseId].sets} × {targets[g.exerciseId].scheme}
+                  target {target.sets} × {target.scheme}
                 </span>
               )}
             </div>
 
-            <div className="mb-1 grid grid-cols-[2rem_1fr_1fr_2.5rem] items-center gap-2 px-1 text-[10px] font-semibold uppercase text-muted">
-              <span>Set</span>
-              <span>{isWeighted ? `Weight (${ex.unit})` : "Weight"}</span>
-              <span>Reps</span>
-              <span></span>
-            </div>
-
             <div className="space-y-1.5">
               {g.sets.map((s) => (
-                <div
+                <button
                   key={s.id}
-                  className={`grid grid-cols-[2rem_1fr_1fr_2.5rem] items-center gap-2 rounded-xl px-1 py-1 ${
-                    s.done ? "bg-accent/10" : ""
+                  onClick={() => startTransition(() => toggleSetDone(s.id, !s.done))}
+                  className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition ${
+                    s.done
+                      ? "border-accent bg-accent/10"
+                      : "border-border bg-surface2"
                   }`}
                 >
-                  <span className="text-center text-sm font-bold text-muted">
-                    {s.setNumber}
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-sm ${
+                      s.done
+                        ? "border-accent bg-accent text-black"
+                        : "border-border text-transparent"
+                    }`}
+                  >
+                    ✓
                   </span>
-                  <NumberCell
-                    value={s.weight}
-                    placeholder="—"
-                    onCommit={(v) =>
-                      startTransition(() => updateSet(s.id, { weight: v }))
-                    }
-                  />
-                  <NumberCell
-                    value={s.reps}
-                    placeholder="—"
-                    onCommit={(v) => startTransition(() => updateSet(s.id, { reps: v }))}
-                  />
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      onClick={() => startTransition(() => toggleSetDone(s.id, !s.done))}
-                      className={`flex h-7 w-7 items-center justify-center rounded-lg border text-sm ${
-                        s.done
-                          ? "border-accent bg-accent text-black"
-                          : "border-border text-muted"
-                      }`}
-                      aria-label="Toggle set done"
-                    >
-                      ✓
-                    </button>
-                  </div>
-                </div>
+                  <span className="text-sm font-semibold">Set {s.setNumber}</span>
+                  {target && (
+                    <span className="ml-auto text-xs text-muted">{target.scheme}</span>
+                  )}
+                </button>
               ))}
             </div>
 
@@ -208,31 +187,5 @@ export default function SessionLogger({
         </button>
       </div>
     </div>
-  );
-}
-
-function NumberCell({
-  value,
-  placeholder,
-  onCommit,
-}: {
-  value: number | null;
-  placeholder: string;
-  onCommit: (v: number | null) => void;
-}) {
-  const [v, setV] = useState(value == null ? "" : String(value));
-  return (
-    <input
-      type="number"
-      inputMode="decimal"
-      className="input px-2 py-1.5 text-center text-sm"
-      placeholder={placeholder}
-      value={v}
-      onChange={(e) => setV(e.target.value)}
-      onBlur={() => {
-        const num = v === "" ? null : Number(v);
-        if (num !== value) onCommit(Number.isNaN(num as number) ? null : num);
-      }}
-    />
   );
 }

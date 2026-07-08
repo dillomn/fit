@@ -25,7 +25,9 @@ export default async function WorkoutsPage() {
           Weekly schedule
         </h2>
         <ScheduleEditor templates={templates} schedule={schedule} />
-        <p className="mt-2 text-xs text-muted">Tap a day to assign a template.</p>
+        <p className="mt-2 text-xs text-muted">
+          Drag a day onto another to swap them · tap a day to assign a template.
+        </p>
       </section>
 
       <section className="space-y-3">
