@@ -49,12 +49,15 @@ const TEMPLATES = [
       // B: vertical pull skill + core
       { name: "Band-Assisted Pull-Ups", sets: 4, reps: 5, scheme: "3-5 (assisted)" },
       { name: "Hanging Knee Raises", sets: 3, reps: 15, scheme: "10-15" },
-      // C: horizontal ring pull + pull-up negatives
-      { name: "Ring Rows", sets: 4, reps: 12, scheme: "8-12" },
+      // C: eccentric pull-up strength + supinated curl. Back pulling is trimmed
+      // to the two moves that actually build the pull-up (band + negatives) — the
+      // extra horizontal row moved off Day 1 (Ring Rows still run on Day 3), and
+      // the freed volume goes to direct arm work for size + elbow-flexion carry-over.
       { name: "Negative Pull-Ups", sets: 3, reps: 3, scheme: "3 (slow 3-5s)" },
-      // D: grip finisher (no curls here — elbows get enough from the pulling;
-      // direct biceps work lives on Day 3)
-      { name: "Dead Hangs", sets: 3, reps: 30, scheme: "20-30s (grip)" },
+      { name: "Barbell/Dumbbell Curls", sets: 3, reps: 12, scheme: "8-12" },
+      // D: brachialis/forearm finisher — arm thickness + grip that carries to
+      // pulling (replaces the old dead-hang grip finisher).
+      { name: "Hammer Curls", sets: 3, reps: 10, scheme: "8-12" },
     ],
   },
   {
